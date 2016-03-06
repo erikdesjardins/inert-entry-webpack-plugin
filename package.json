@@ -1,6 +1,6 @@
 {
   "name": "inert-entry-webpack-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Webpack plugin to allow non-js entry chunks.",
   "main": "index.js",
   "scripts": {
