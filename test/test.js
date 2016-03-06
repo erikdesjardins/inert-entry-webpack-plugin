@@ -7,7 +7,40 @@ import rimraf from 'rimraf';
 
 import InertEntryPlugin from '../index';
 
-test('basic usage', async t => {
+test('single entry chunk', async t => {
+	await new Promise((resolve, reject) => {
+		webpack({
+			entry: join(__dirname, 'src/main.html'),
+			bail: true,
+			output: {
+				path: join(__dirname, 'dist'),
+				filename: '[name]-dist.html'
+			},
+			module: {
+				loaders: [
+					{ test: /\.html$/, loaders: ['extricate', 'html?attrs=img:src script:src'] },
+					{ test: /\.js$/, loader: 'spawn?name=[name]-dist.js' }
+				]
+			},
+			plugins: [
+				new InertEntryPlugin()
+			]
+		}, (err, stats) => {
+			err ? reject(err) : resolve(stats);
+		});
+	});
+
+	const mainDistHtml = readFileSync(join(__dirname, 'dist/main-dist.html'));
+	const appDistJs = readFileSync(join(__dirname, 'dist/app-dist.js'));
+
+	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
+
+	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
+	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
+});
+
+test('multiple entry chunks', async t => {
 	await new Promise((resolve, reject) => {
 		webpack({
 			entry: {
@@ -48,7 +81,7 @@ test('basic usage', async t => {
 	t.ok(hiDistJpg, 'non-empty');
 
 	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
-	t.regex(appDistJs, /module\.exports = null;/, 'has exports');
+	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
 });
 
 test.after(t => {
