@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/erikdesjardins/inert-entry-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/erikdesjardins/inert-entry-webpack-plugin#readme"
+  "homepage": "https://github.com/erikdesjardins/inert-entry-webpack-plugin#readme",
+  "dependencies": {
+    "file-loader": "^0.8.5",
+    "lodash": "^4.6.1"
+  }
 }
