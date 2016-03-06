@@ -14,7 +14,7 @@ test('single entry chunk', async t => {
 			bail: true,
 			output: {
 				path: join(__dirname, 'dist'),
-				filename: '[name]-dist.html'
+				filename: '[chunkname]-dist.html'
 			},
 			module: {
 				loaders: [
@@ -50,7 +50,7 @@ test('multiple entry chunks', async t => {
 			bail: true,
 			output: {
 				path: join(__dirname, 'dist'),
-				filename: '[name]-dist.html'
+				filename: '[chunkname]-dist.html'
 			},
 			module: {
 				loaders: [
