@@ -3,7 +3,7 @@
 Webpack plugin to allow non-js entry chunks.
 
 Webpack requires that all entry chunks emit valid JS.
-However, the actual entry point for a webapp is usually HTML.
+However, sometimes you want to use HTML or a manifest file as your entry point.
 
 This plugin allows the use of any non-JS ("inert") file in an entry chunk, and prevents Webpack from adding its wrapper to those chunks.
 
