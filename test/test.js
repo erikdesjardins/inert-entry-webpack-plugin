@@ -92,6 +92,37 @@ test('multiple entry chunks', async t => {
 	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
 });
 
+test('substituting [name] instead of [chunkname]', async t => {
+	const out = randomPath();
+
+	await new Promise((resolve, reject) => {
+		webpack({
+			entry: join(__dirname, 'src/other.html'),
+			bail: true,
+			output: {
+				path: out,
+				filename: '[name]-dist.html'
+			},
+			module: {
+				loaders: [
+					{ test: /\.html$/, loaders: ['extricate', 'html'] },
+					{ test: /\.jpg$/, loader: 'file?name=[name]-dist.[ext]' }
+				]
+			},
+			plugins: [
+				new InertEntryPlugin()
+			]
+		}, (err, stats) => {
+			err ? reject(err) : resolve(stats);
+		});
+	});
+
+	const otherDistHtml = readFileSync(join(out, 'other-dist.html'));
+
+	t.regex(otherDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.regex(otherDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
+});
+
 test.after(t => {
 	rimraf.sync(join(__dirname, 'dist'));
 });
