@@ -1,6 +1,6 @@
 {
   "name": "inert-entry-webpack-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Webpack plugin to allow non-js entry chunks.",
   "main": "index.js",
   "scripts": {
@@ -22,5 +22,14 @@
   "dependencies": {
     "file-loader": "^0.8.5",
     "lodash": "^4.6.1"
+  },
+  "devDependencies": {
+    "ava": "^0.12.0",
+    "extricate-loader": "0.0.1",
+    "file-loader": "^0.8.5",
+    "html-loader": "^0.4.3",
+    "rimraf": "^2.5.2",
+    "spawn-loader": "0.0.1",
+    "webpack": "^1.12.14"
   }
 }
