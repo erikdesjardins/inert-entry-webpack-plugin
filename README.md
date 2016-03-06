@@ -6,18 +6,13 @@ Webpack requires that all entry chunks emit valid JS.
 However, sometimes you want to use HTML or a manifest file as your entry point.
 
 This plugin allows the use of any non-JS ("inert") file in an entry chunk, and prevents Webpack from adding its wrapper to those chunks.
+This only affects the main compiler, not any child compilers.
 
 Use [`entry-loader`](https://github.com/eoin/entry-loader) or equivalent to emit normal entry points for JS files required in your HTML.
 
 ## Installation
 
 `npm install --save-dev inert-entry-webpack-plugin`
-
-## Options
-
-`new InertEntryPlugin({ children: true })` (default `false`):
-
-Whether or not child compilers' (e.g. those created by `entry-loader`) entry chunks should also be made inert.
 
 ## Usage
 

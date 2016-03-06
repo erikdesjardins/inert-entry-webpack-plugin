@@ -15,11 +15,12 @@ function InertEntryPlugin(options) {
 InertEntryPlugin.prototype.apply = function(compiler) {
 	// placeholder chunk name, to be removed from assets when Webpack emits them
 	var placeholder = '__INERT_ENTRY_CHUNK_' + String(Math.random()).slice(2) + '__';
-	var includeChildren = !!this.options.children;
 
 	compiler.plugin('compilation', function(compilation) {
-		// don't interfere with child compilers (i.e. used in entry-loader)
-		if (this.isChild() && !includeChildren) {
+		// don't interfere with child compilers (i.e. used in entry-loader), since:
+		// a. you probably don't want your child compilers to be inert
+		// b. we don't get enough information from `compilation.options` (only `output`, no `entry`)
+		if (this.isChild()) {
 			return;
 		}
 
@@ -44,8 +45,7 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 	});
 
 	compiler.plugin('emit', function(compilation, callback) {
-		// don't interfere with child compilers (i.e. used in entry-loader)
-		if (this.isChild() && !includeChildren) {
+		if (this.isChild()) {
 			callback();
 			return;
 		}
