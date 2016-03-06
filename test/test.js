@@ -7,13 +7,19 @@ import rimraf from 'rimraf';
 
 import InertEntryPlugin from '../index';
 
+function randomPath() {
+	return join(__dirname, 'dist', String(Math.random()).slice(2));
+}
+
 test('single entry chunk', async t => {
+	const out = randomPath();
+
 	await new Promise((resolve, reject) => {
 		webpack({
 			entry: join(__dirname, 'src/main.html'),
 			bail: true,
 			output: {
-				path: join(__dirname, 'dist'),
+				path: out,
 				filename: '[chunkname]-dist.html'
 			},
 			module: {
@@ -30,8 +36,8 @@ test('single entry chunk', async t => {
 		});
 	});
 
-	const mainDistHtml = readFileSync(join(__dirname, 'dist/main-dist.html'));
-	const appDistJs = readFileSync(join(__dirname, 'dist/app-dist.js'));
+	const mainDistHtml = readFileSync(join(out, 'main-dist.html'));
+	const appDistJs = readFileSync(join(out, 'app-dist.js'));
 
 	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
@@ -41,6 +47,8 @@ test('single entry chunk', async t => {
 });
 
 test('multiple entry chunks', async t => {
+	const out = randomPath();
+
 	await new Promise((resolve, reject) => {
 		webpack({
 			entry: {
@@ -49,7 +57,7 @@ test('multiple entry chunks', async t => {
 			},
 			bail: true,
 			output: {
-				path: join(__dirname, 'dist'),
+				path: out,
 				filename: '[chunkname]-dist.html'
 			},
 			module: {
@@ -67,10 +75,10 @@ test('multiple entry chunks', async t => {
 		});
 	});
 
-	const oneDistHtml = readFileSync(join(__dirname, 'dist/one-dist.html'));
-	const twoDistHtml = readFileSync(join(__dirname, 'dist/two-dist.html'));
-	const hiDistJpg = readFileSync(join(__dirname, 'dist/hi-dist.jpg'));
-	const appDistJs = readFileSync(join(__dirname, 'dist/app-dist.js'));
+	const oneDistHtml = readFileSync(join(out, 'one-dist.html'));
+	const twoDistHtml = readFileSync(join(out, 'two-dist.html'));
+	const hiDistJpg = readFileSync(join(out, 'hi-dist.jpg'));
+	const appDistJs = readFileSync(join(out, 'app-dist.js'));
 
 	t.regex(oneDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(oneDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
