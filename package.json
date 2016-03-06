@@ -1,0 +1,22 @@
+{
+  "name": "inert-entry-webpack-plugin",
+  "version": "0.0.0",
+  "description": "Webpack plugin to allow non-js entry chunks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikdesjardins/inert-entry-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack"
+  ],
+  "author": "Erik Desjardins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/erikdesjardins/inert-entry-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/erikdesjardins/inert-entry-webpack-plugin#readme"
+}
