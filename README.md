@@ -32,7 +32,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    // Note: the `[chunkhash]` substitution does not work here, due to the use of file-loader
+    // Note: the `[chunkhash]` substitution does not work here
     filename: '[name].[hash].html'
   },
   module: {
@@ -64,10 +64,6 @@ module.exports = {
 
 **nameOfEntryChunk.0dcbbaa701328a3c262cfd45869e351f.html:**
 
-Notice that Webpack's wrapper is not present, as you would expect for an entry chunk.
-
-`main.bundle.js` *will* contain the wrapper, however, because it's loaded with `entry-loader`.
-
 ```html
 <html>
 <head>
@@ -77,3 +73,7 @@ Notice that Webpack's wrapper is not present, as you would expect for an entry c
 <body>...</body>
 </html>
 ```
+
+Notice that Webpack's wrapper is not present, as you would expect for an entry chunk.
+
+`main.bundle.js` *will* contain the wrapper, however, because it's loaded with `entry-loader`.
