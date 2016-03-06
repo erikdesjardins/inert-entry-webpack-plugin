@@ -35,8 +35,8 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 			// match the raw request to one of the entry files
 			var name = _.findKey(entries, _.matches(module.rawRequest));
 			if (name) {
-				// interpolate `[name]` ahead-of-time, so chunk names are used correctly
-				var interpolatedName = originalName.replace(/\[name\]/g, name);
+				// interpolate `[chunkname]` ahead-of-time, so entry chunk names are used correctly
+				var interpolatedName = originalName.replace(/\[chunkname\]/g, name);
 				// prepend file-loader to the file's loaders, to create the output file
 				module.loaders.unshift(fileLoaderPath + '?name=' + interpolatedName);
 			}
