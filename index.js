@@ -8,9 +8,7 @@
 var _ = require('lodash');
 var fileLoaderPath = require.resolve('file-loader');
 
-function InertEntryPlugin(options) {
-	this.options = options || {};
-}
+function InertEntryPlugin() {}
 
 InertEntryPlugin.prototype.apply = function(compiler) {
 	// placeholder chunk name, to be removed from assets when Webpack emits them
