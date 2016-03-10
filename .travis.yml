@@ -4,6 +4,10 @@ node_js:
   - "4"
   - "0.12"
 script: npm test
+branches:
+  only:
+    - master
+    - /^v[0-9]/
 deploy:
   provider: npm
   email: 'public@erikdesjardins.io'
