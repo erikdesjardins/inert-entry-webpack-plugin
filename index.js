@@ -42,7 +42,7 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 		});
 	});
 
-	compiler.plugin('emit', function(compilation, callback) {
+	compiler.plugin('after-compile', function(compilation, callback) {
 		if (this.isChild()) {
 			callback();
 			return;
