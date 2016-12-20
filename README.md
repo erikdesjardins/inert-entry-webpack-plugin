@@ -8,7 +8,7 @@ However, sometimes you want to use HTML or a manifest file as your entry point.
 This plugin allows the use of any non-JS ("inert") file in an entry chunk, and prevents Webpack from adding its wrapper to those chunks.
 This only affects the main compiler, not any child compilers.
 
-Use [`entry-loader`](https://github.com/eoin/entry-loader) or equivalent to emit normal entry points for JS files required in your HTML.
+Use [`entry-loader`](https://github.com/eoin/entry-loader) or [`spawn-loader`](https://github.com/erikdesjardins/spawn-loader) to emit normal entry points for JS files required in your HTML or manifest files.
 
 ## Installation
 
