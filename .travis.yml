@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - "5"
+  - "6"
   - "4"
-  - "0.12"
 script: npm test
 branches:
   only:
@@ -15,4 +14,4 @@ deploy:
     secure: HNzFs/yaYVti8gTG5JzKpC0y+DnRXEQC/lS48Nncls3wNO2X5WPBWaz/aQgk0cJfNm0UeeoCBTSL9DRvoQOG0143uMI4frm9mXoWlJNlC2w6e6MMbYvHQ7pP8VB9pJGEv4x0xiFVeHyiXnamW2ND9zndziCg3HTbQh/N3e9CVxd5y+JTyD1qxEaZG7SxUMmntNOJNbqv7Gt+KDaXOfPQjDvbjPuTZxIk0Shgud9lbb4FQh1ggSUb6heciV20s37Xh5APA/Blko1reZxRTLHIIE6oTthb0xOryHU6CHomEXX+F68qLABzZGzRRCsJ6obio42Sq5bR7J8/e+MbG0sxIAqGS3BpUK44GLlxzE+BuhESy6VFET4NINKVwjGYDpdgBoNmDDJdPNHckroRqqKuUHaIOO+ITYM+hRtXSMqv0aY8guSYyeHq6RVyFdxMGAjZoLCw+Oy2+H1GWZjsoHBLWhBRQJLZ0lLjQxDFdciiZ64VoZkLtNj6h8u0Bcp2sY8ApLWUZmQzL36Z2UVyrYgyIYNQm5kz2LZX0b6iIh2sVlY5GvZFszMMgxu2CtHJpIoKYadb9qDLjB8PM/MikVmhLNXjDirqO6QzjI+Px5BDxWBGlyC/iXdX0ZqCexnTjpP1/oxBfTgV4fZBx2qxfBKtBTV3f+fPnd4cv/DNZVMrjFI=
   on:
     tags: true
-    node: 5
+    node: 6
