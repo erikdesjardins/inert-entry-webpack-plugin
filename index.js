@@ -13,6 +13,7 @@ function InertEntryPlugin() {}
 InertEntryPlugin.prototype.apply = function(compiler) {
 	// placeholder chunk name, to be removed from assets when Webpack emits them
 	var placeholder = '__INERT_ENTRY_CHUNK_' + String(Math.random()).slice(2) + '__';
+	var originalName;
 
 	compiler.plugin('compilation', function(compilation, params) {
 		// don't interfere with child compilers (i.e. used in entry-loader), since:
@@ -23,8 +24,11 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 		}
 
 		// replace the entry chunk output option with the placeholder
-		var originalName = compilation.options.output.filename;
-		compilation.options.output.filename = placeholder;
+		// don't do this if the filename is already changed (i.e. on a subsequent watch build)
+		if (!originalName || compilation.options.output.filename !== placeholder) {
+			originalName = compilation.options.output.filename;
+			compilation.options.output.filename = placeholder;
+		}
 
 		var entries = typeof compilation.options.entry === 'object' ?
 			compilation.options.entry :
