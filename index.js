@@ -14,7 +14,7 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 	// placeholder chunk name, to be removed from assets when Webpack emits them
 	var placeholder = '__INERT_ENTRY_CHUNK_' + String(Math.random()).slice(2) + '__';
 
-	compiler.plugin('compilation', function(compilation) {
+	compiler.plugin('compilation', function(compilation, params) {
 		// don't interfere with child compilers (i.e. used in entry-loader), since:
 		// a. you probably don't want your child compilers to be inert
 		// b. we don't get enough information from `compilation.options` (only `output`, no `entry`)
@@ -30,15 +30,22 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 			compilation.options.entry :
 			{ main: compilation.options.entry };
 
-		compilation.plugin('build-module', function(module) {
+		params.normalModuleFactory.plugin("after-resolve", (data, done) => {
 			// match the raw request to one of the entry files
-			var name = _.findKey(entries, _.matches(module.rawRequest));
+			var name = _.findKey(entries, _.matches(data.rawRequest));
 			if (name) {
 				// interpolate `[chunkname]` ahead-of-time, so entry chunk names are used correctly
 				var interpolatedName = originalName.replace(/\[chunkname\]/g, name);
 				// prepend file-loader to the file's loaders, to create the output file
-				module.loaders.unshift(fileLoaderPath + '?name=' + interpolatedName);
+				var fileLoaderObject = {
+					loader: fileLoaderPath,
+					options: {
+						'name': interpolatedName
+					}
+				}
+				data.loaders.unshift(fileLoaderObject);
 			}
+			done(null, data);
 		});
 	});
 
