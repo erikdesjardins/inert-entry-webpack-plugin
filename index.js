@@ -30,7 +30,7 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 			compilation.options.entry :
 			{ main: compilation.options.entry };
 
-		params.normalModuleFactory.plugin("after-resolve", (data, done) => {
+		params.normalModuleFactory.plugin('after-resolve', (data, done) => {
 			// match the raw request to one of the entry files
 			var name = _.findKey(entries, _.matches(data.rawRequest));
 			if (name) {
