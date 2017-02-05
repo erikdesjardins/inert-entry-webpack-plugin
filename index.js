@@ -30,22 +30,19 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 			compilation.options.entry :
 			{ main: compilation.options.entry };
 
-		params.normalModuleFactory.plugin('after-resolve', (data, done) => {
+		params.normalModuleFactory.plugin('after-resolve', function(data, callback) {
 			// match the raw request to one of the entry files
 			var name = _.findKey(entries, _.matches(data.rawRequest));
 			if (name) {
 				// interpolate `[chunkname]` ahead-of-time, so entry chunk names are used correctly
 				var interpolatedName = originalName.replace(/\[chunkname\]/g, name);
 				// prepend file-loader to the file's loaders, to create the output file
-				var fileLoaderObject = {
+				data.loaders.unshift({
 					loader: fileLoaderPath,
-					options: {
-						'name': interpolatedName
-					}
-				}
-				data.loaders.unshift(fileLoaderObject);
+					options: { name: interpolatedName }
+				});
 			}
-			done(null, data);
+			callback(null, data);
 		});
 	});
 
