@@ -24,8 +24,8 @@ test('single entry chunk', async t => {
 			},
 			module: {
 				loaders: [
-					{ test: /\.html$/, loaders: ['extricate', 'html?attrs=img:src script:src'] },
-					{ test: /\.js$/, loader: 'spawn?name=[name]-dist.js' }
+					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
 				]
 			},
 			plugins: [
@@ -62,9 +62,9 @@ test('multiple entry chunks', async t => {
 			},
 			module: {
 				loaders: [
-					{ test: /\.html$/, loaders: ['extricate', 'html?attrs=img:src script:src'] },
-					{ test: /\.jpg$/, loader: 'file?name=[name]-dist.[ext]' },
-					{ test: /\.js$/, loader: 'spawn?name=[name]-dist.js' }
+					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+					{ test: /\.jpg$/, loader: 'file-loader?name=[name]-dist.[ext]' },
+					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
 				]
 			},
 			plugins: [
@@ -86,7 +86,7 @@ test('multiple entry chunks', async t => {
 	t.regex(twoDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(twoDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
 
-	t.ok(hiDistJpg, 'non-empty');
+	t.truthy(hiDistJpg, 'non-empty');
 
 	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
 	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
@@ -105,8 +105,8 @@ test('substituting [name] instead of [chunkname]', async t => {
 			},
 			module: {
 				loaders: [
-					{ test: /\.html$/, loaders: ['extricate', 'html'] },
-					{ test: /\.jpg$/, loader: 'file?name=[name]-dist.[ext]' }
+					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader'] },
+					{ test: /\.jpg$/, loader: 'file-loader?name=[name]-dist.[ext]' }
 				]
 			},
 			plugins: [
