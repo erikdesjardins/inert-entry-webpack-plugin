@@ -32,9 +32,9 @@ module.exports = {
     filename: '[chunkname].[hash].html'
   },
   module: {
-    loaders: [
-      { test: /\.html$/, loaders: ['extract', 'html?attrs=link:href script:src'] },
-      { test: /\.css$/, loaders: ['file', 'extract', 'css'] }
+    rules: [
+      { test: /\.html$/, use: ['extract-loader', { loader: 'html-loader', options: { attrs: ['link:href', 'script:src'] } }] },
+      { test: /\.css$/, use: ['file-loader', 'extract-loader', 'css-loader'] }
     ]
   },
   plugins: [
@@ -50,7 +50,7 @@ module.exports = {
 <html>
 <head>
   <link rel="stylesheet" href="./main.css" type="text/css">
-  <script src="entry!app.js"></script>
+  <script src="entry-loader!app.js"></script>
 </head>
 <body>...</body>
 </html>
