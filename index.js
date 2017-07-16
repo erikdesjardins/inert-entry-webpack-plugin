@@ -5,7 +5,6 @@
 
 'use strict';
 
-var _ = require('lodash');
 var fileLoaderPath = require.resolve('file-loader');
 
 function InertEntryPlugin() {}
@@ -36,7 +35,14 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 
 		params.normalModuleFactory.plugin('after-resolve', function(data, callback) {
 			// match the raw request to one of the entry files
-			var name = _.findKey(entries, _.matches(data.rawRequest));
+			var name;
+			for (var key in entries) {
+				if (!entries.hasOwnProperty(key)) continue;
+				if (entries[key] === data.rawRequest) {
+					name = key;
+					break;
+				}
+			}
 			if (name) {
 				// interpolate `[chunkname]` ahead-of-time, so entry chunk names are used correctly
 				var interpolatedName = originalName.replace(/\[chunkname\]/g, name);

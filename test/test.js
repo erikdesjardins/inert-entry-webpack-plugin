@@ -36,8 +36,8 @@ test('single entry chunk', async t => {
 		});
 	});
 
-	const mainDistHtml = readFileSync(join(out, 'main-dist.html'));
-	const appDistJs = readFileSync(join(out, 'app-dist.js'));
+	const mainDistHtml = readFileSync(join(out, 'main-dist.html'), 'utf8');
+	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
 
 	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
@@ -75,10 +75,10 @@ test('multiple entry chunks', async t => {
 		});
 	});
 
-	const oneDistHtml = readFileSync(join(out, 'one-dist.html'));
-	const twoDistHtml = readFileSync(join(out, 'two-dist.html'));
+	const oneDistHtml = readFileSync(join(out, 'one-dist.html'), 'utf8');
+	const twoDistHtml = readFileSync(join(out, 'two-dist.html'), 'utf8');
 	const hiDistJpg = readFileSync(join(out, 'hi-dist.jpg'));
-	const appDistJs = readFileSync(join(out, 'app-dist.js'));
+	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
 
 	t.regex(oneDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(oneDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
@@ -117,7 +117,7 @@ test('substituting [name] instead of [chunkname]', async t => {
 		});
 	});
 
-	const otherDistHtml = readFileSync(join(out, 'other-dist.html'));
+	const otherDistHtml = readFileSync(join(out, 'other-dist.html'), 'utf8');
 
 	t.regex(otherDistHtml, /^<!DOCTYPE html>/, 'no prelude');
 	t.regex(otherDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
