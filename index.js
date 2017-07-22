@@ -30,8 +30,8 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 		}
 
 		var entries = compilation.options.entry;
-		if(typeof entries === 'function') entries = entries();
-		if(typeof entries !== 'object') entries = { main: entries };
+		if (typeof entries === 'function') entries = entries();
+		if (typeof entries !== 'object') entries = { main: entries };
 
 		params.normalModuleFactory.plugin('after-resolve', function(data, callback) {
 			// match the raw request to one of the entry files
