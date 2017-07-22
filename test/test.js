@@ -92,6 +92,41 @@ test('multiple entry chunks', async t => {
 	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
 });
 
+test('single entry chunk though function', async t => {
+	const out = randomPath();
+
+	await new Promise((resolve, reject) => {
+		webpack({
+			entry: () => join(__dirname, 'src/main.html'),
+			bail: true,
+			output: {
+				path: out,
+				filename: '[chunkname]-dist.html'
+			},
+			module: {
+				loaders: [
+					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
+				]
+			},
+			plugins: [
+				new InertEntryPlugin()
+			]
+		}, (err, stats) => {
+			err ? reject(err) : resolve(stats);
+		});
+	});
+
+	const mainDistHtml = readFileSync(join(out, 'main-dist.html'), 'utf8');
+	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
+
+	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
+
+	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
+	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
+});
+
 test('substituting [name] instead of [chunkname]', async t => {
 	const out = randomPath();
 
