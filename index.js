@@ -22,14 +22,16 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 			data.parser = {
 				// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JsonParser.js
 				parse(source, state) {
-					state.module.buildInfo.source = source;
+					state.module.buildInfo.source = new RawSource(source);
 					return state;
 				}
 			};
 			data.generator = {
 				// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JsonGenerator.js
 				generate(module) {
-					return new RawSource(module.buildInfo.source);
+					// may be undefined, if, e.g. the module has errors
+					// (but seemingly only in very specific situations, so this is untested)
+					return module.buildInfo.source;
 				}
 			};
 		});
