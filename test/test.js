@@ -13,17 +13,19 @@ function randomPath() {
 
 function runWebpack(options) {
 	return new Promise((resolve, reject) => {
-		webpack({
-			mode: 'development',
-			devtool: false,
-			bail: true,
-			plugins: [
-				new InertEntryPlugin()
-			],
-			...options
-		}, (err, stats) => {
-			stats.hasErrors() ? reject(stats.toString()) : resolve(stats);
-		});
+		webpack(
+			Object.assign({
+				mode: 'development',
+				devtool: false,
+				bail: true,
+				plugins: [
+					new InertEntryPlugin()
+				],
+			}, options),
+			(err, stats) => {
+				stats.hasErrors() ? reject(stats.toString()) : resolve(stats);
+			}
+		);
 	});
 }
 
