@@ -48,10 +48,37 @@ test('single entry chunk', async t => {
 	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
 
 	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.notRegex(mainDistHtml, /;/, 'no semicolons');
 	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
 
 	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
 	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
+});
+
+test('named single entry', async t => {
+	const out = randomPath();
+
+	await runWebpack({
+		entry: {
+			other: join(__dirname, 'src/other.html')
+		},
+		output: {
+			path: out,
+			filename: '[name]-dist.html'
+		},
+		module: {
+			rules: [
+				{ test: /\.html$/, use: ['extricate-loader', 'html-loader'] },
+				{ test: /\.jpg$/, use: 'file-loader?name=[name]-dist.[ext]' }
+			]
+		},
+	});
+
+	const otherDistHtml = readFileSync(join(out, 'other-dist.html'), 'utf8');
+
+	t.regex(otherDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.notRegex(otherDistHtml, /;/, 'no semicolons');
+	t.regex(otherDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
 });
 
 test('multiple entry chunks', async t => {
@@ -81,9 +108,11 @@ test('multiple entry chunks', async t => {
 	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
 
 	t.regex(oneDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.notRegex(oneDistHtml, /;/, 'no semicolons');
 	t.regex(oneDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
 
 	t.regex(twoDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.notRegex(twoDistHtml, /;/, 'no semicolons');
 	t.regex(twoDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
 
 	t.truthy(hiDistJpg, 'non-empty');
@@ -113,33 +142,11 @@ test('single entry chunk though function', async t => {
 	const appDistJs = readFileSync(join(out, 'app-dist.js'), 'utf8');
 
 	t.regex(mainDistHtml, /^<!DOCTYPE html>/, 'no prelude');
+	t.notRegex(mainDistHtml, /;/, 'no semicolons');
 	t.regex(mainDistHtml, /<script src="app-dist\.js"><\/script>/, 'references app-dist.js');
 
 	t.regex(appDistJs, /\bfunction __webpack_require__\b/, 'has prelude');
 	t.regex(appDistJs, /module\.exports = 'this should not be imported';/, 'has exports');
-});
-
-test('substituting [name] instead of [chunkname]', async t => {
-	const out = randomPath();
-
-	await runWebpack({
-		entry: join(__dirname, 'src/other.html'),
-		output: {
-			path: out,
-			filename: '[name]-dist.html'
-		},
-		module: {
-			rules: [
-				{ test: /\.html$/, use: ['extricate-loader', 'html-loader'] },
-				{ test: /\.jpg$/, use: 'file-loader?name=[name]-dist.[ext]' }
-			]
-		},
-	});
-
-	const otherDistHtml = readFileSync(join(out, 'other-dist.html'), 'utf8');
-
-	t.regex(otherDistHtml, /^<!DOCTYPE html>/, 'no prelude');
-	t.regex(otherDistHtml, /<img src="hi-dist\.jpg"\/>/, 'references hi-dist.jpg');
 });
 
 test.after(t => {
