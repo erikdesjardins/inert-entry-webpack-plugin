@@ -20,17 +20,17 @@
   },
   "homepage": "https://github.com/erikdesjardins/inert-entry-webpack-plugin#readme",
   "dependencies": {
-    "file-loader": "^0.11.2"
+    "file-loader": "^1.1.11"
   },
   "peerDependencies": {
-    "webpack": ">=3.0.0"
+    "webpack": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "^0.21.0",
-    "extricate-loader": "2.0.0",
-    "html-loader": "^0.4.5",
-    "rimraf": "^2.6.1",
-    "spawn-loader": "3.0.0",
-    "webpack": "^3.3.0"
+    "ava": "^0.25.0",
+    "extricate-loader": "^3.0.0",
+    "html-loader": "^0.5.5",
+    "rimraf": "^2.6.2",
+    "spawn-loader": "^5.0.0",
+    "webpack": "^4.0.0"
   }
 }
