@@ -34,7 +34,7 @@ test('single entry chunk', async t => {
 		entry: join(__dirname, 'src/main.html'),
 		output: {
 			path: out,
-			filename: '[chunkname]-dist.html'
+			filename: '[name]-dist.html'
 		},
 		module: {
 			rules: [
@@ -64,7 +64,7 @@ test('multiple entry chunks', async t => {
 		},
 		output: {
 			path: out,
-			filename: '[chunkname]-dist.html'
+			filename: '[name]-dist.html'
 		},
 		module: {
 			rules: [
@@ -99,7 +99,7 @@ test('single entry chunk though function', async t => {
 		entry: () => join(__dirname, 'src/main.html'),
 		output: {
 			path: out,
-			filename: '[chunkname]-dist.html'
+			filename: '[name]-dist.html'
 		},
 		module: {
 			rules: [

@@ -27,9 +27,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    // Note: substitutions here are handled by `file-loader`, not Webpack as usual
-    // use `[chunkname]` in place of `[name]` if you want the name of the entry chunk
-    filename: '[chunkname].[hash].html'
+    filename: '[name].[hash].html'
   },
   module: {
     rules: [
