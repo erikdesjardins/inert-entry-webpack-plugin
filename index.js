@@ -14,11 +14,11 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 	var placeholder = '__INERT_ENTRY_CHUNK_' + String(Math.random()).slice(2) + '__';
 	var originalName;
 
-	compiler.plugin('compilation', function(compilation, params) {
+	compiler.hooks.compilation.tap(InertEntryPlugin.name, function(compilation, params) {
 		// don't interfere with child compilers (i.e. used in entry-loader), since:
 		// a. you probably don't want your child compilers to be inert
 		// b. we don't get enough information from `compilation.options` (only `output`, no `entry`)
-		if (this.isChild()) {
+		if (compilation.compiler.isChild()) {
 			return;
 		}
 
@@ -33,7 +33,7 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 		if (typeof entries === 'function') entries = entries();
 		if (typeof entries !== 'object') entries = { main: entries };
 
-		params.normalModuleFactory.plugin('after-resolve', function(data, callback) {
+		params.normalModuleFactory.hooks.beforeResolve.tap(InertEntryPlugin.name, function(data) {
 			// match the raw request to one of the entry files
 			var name;
 			for (var key in entries) {
@@ -52,19 +52,13 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 					options: { name: interpolatedName }
 				});
 			}
-			callback(null, data);
+			return data;
 		});
 	});
 
-	compiler.plugin('after-compile', function(compilation, callback) {
-		if (this.isChild()) {
-			callback();
-			return;
-		}
-
+	compiler.hooks.afterCompile.tap(InertEntryPlugin.name, function(compilation) {
 		// remove the placeholder asset that we replaced the entry chunk with
 		delete compilation.assets[placeholder];
-		callback();
 	});
 };
 
