@@ -5,60 +5,54 @@
 
 'use strict';
 
-var fileLoaderPath = require.resolve('file-loader');
+const RawSource = require('webpack-sources').RawSource;
 
 function InertEntryPlugin() {}
 
 InertEntryPlugin.prototype.apply = function(compiler) {
-	// placeholder chunk name, to be removed from assets when Webpack emits them
-	var placeholder = '__INERT_ENTRY_CHUNK_' + String(Math.random()).slice(2) + '__';
-	var originalName;
-
-	compiler.hooks.compilation.tap(InertEntryPlugin.name, function(compilation, params) {
-		// don't interfere with child compilers (i.e. used in entry-loader), since:
-		// a. you probably don't want your child compilers to be inert
-		// b. we don't get enough information from `compilation.options` (only `output`, no `entry`)
-		if (compilation.compiler.isChild()) {
-			return;
-		}
-
-		// replace the entry chunk output option with the placeholder
-		// don't do this if the filename is already changed (i.e. on a subsequent watch build)
-		if (!originalName || compilation.options.output.filename !== placeholder) {
-			originalName = compilation.options.output.filename;
-			compilation.options.output.filename = placeholder;
-		}
-
-		var entries = compilation.options.entry;
-		if (typeof entries === 'function') entries = entries();
-		if (typeof entries !== 'object') entries = { main: entries };
-
-		params.normalModuleFactory.hooks.beforeResolve.tap(InertEntryPlugin.name, function(data) {
-			// match the raw request to one of the entry files
-			var name;
-			for (var key in entries) {
-				if (!entries.hasOwnProperty(key)) continue;
-				if (entries[key] === data.rawRequest) {
-					name = key;
-					break;
+	compiler.hooks.thisCompilation.tap(InertEntryPlugin.name, function(compilation,  { normalModuleFactory }) {
+		// parser and generator originally assigned here:
+		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/NormalModuleFactory.js#L317-L319
+		// but it doesn't appear that we can interfere before this point,
+		// so mutate the resolved object after resolution:
+		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/NormalModuleFactory.js#L126
+		normalModuleFactory.hooks.afterResolve.tap(InertEntryPlugin.name, data => {
+			data.type = 'inert-entry-plugin';
+			// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JsonModulesPlugin.js
+			data.parser = {
+				// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JsonParser.js
+				parse(source, state) {
+					state.module.buildInfo.source = source;
+					return state;
 				}
-			}
-			if (name) {
-				// interpolate `[chunkname]` ahead-of-time, so entry chunk names are used correctly
-				var interpolatedName = originalName.replace(/\[chunkname\]/g, name);
-				// prepend file-loader to the file's loaders, to create the output file
-				data.loaders.unshift({
-					loader: fileLoaderPath,
-					options: { name: interpolatedName }
-				});
-			}
-			return data;
+			};
+			data.generator = {
+				// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JsonGenerator.js
+				generate(module) {
+					return new RawSource(module.buildInfo.source);
+				}
+			};
 		});
-	});
-
-	compiler.hooks.afterCompile.tap(InertEntryPlugin.name, function(compilation) {
-		// remove the placeholder asset that we replaced the entry chunk with
-		delete compilation.assets[placeholder];
+		// prevent the bootstrap code from being emitted
+		// (can't override render directly because JavascriptModulesPlugin::renderJavascript forcibly appends a semicolon)
+		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/MainTemplate.js#L118
+		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JavascriptModulesPlugin.js#L109
+		// https://github.com/webpack-contrib/mini-css-extract-plugin/blob/31742323d4a6004ee4a2d2be92f642de01f66cbc/src/index.js#L107
+		compilation.mainTemplate.hooks.renderManifest.tap(InertEntryPlugin.name, (result, { chunk, outputOptions }) => {
+			if (chunk.getNumberOfModules() !== 1) {
+				throw new Error('Assertion failed: inert entry point must have exactly 1 module');
+			}
+			result.push({
+				render: () => chunk.entryModule.source(),
+				filenameTemplate: chunk.filenameTemplate || outputOptions.filename,
+				pathOptions: {
+					chunk,
+				},
+				identifier: `inert-entry-plugin.${chunk.id}`
+			});
+			// kill any following plugins by returning a dummy array that they'll push to
+			return [];
+		});
 	});
 };
 

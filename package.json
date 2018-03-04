@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/erikdesjardins/inert-entry-webpack-plugin#readme",
   "dependencies": {
-    "file-loader": "^1.1.11"
+    "webpack-sources": "^1.1.0"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
