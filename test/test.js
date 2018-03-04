@@ -11,29 +11,37 @@ function randomPath() {
 	return join(__dirname, 'dist', String(Math.random()).slice(2));
 }
 
+function runWebpack(options) {
+	return new Promise((resolve, reject) => {
+		webpack({
+			mode: 'development',
+			devtool: false,
+			bail: true,
+			plugins: [
+				new InertEntryPlugin()
+			],
+			...options
+		}, (err, stats) => {
+			stats.hasErrors() ? reject(stats.toString()) : resolve(stats);
+		});
+	});
+}
+
 test('single entry chunk', async t => {
 	const out = randomPath();
 
-	await new Promise((resolve, reject) => {
-		webpack({
-			entry: join(__dirname, 'src/main.html'),
-			bail: true,
-			output: {
-				path: out,
-				filename: '[chunkname]-dist.html'
-			},
-			module: {
-				loaders: [
-					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
-					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
-				]
-			},
-			plugins: [
-				new InertEntryPlugin()
+	await runWebpack({
+		entry: join(__dirname, 'src/main.html'),
+		output: {
+			path: out,
+			filename: '[chunkname]-dist.html'
+		},
+		module: {
+			rules: [
+				{ test: /\.html$/, use: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+				{ test: /\.js$/, use: 'spawn-loader?name=[name]-dist.js' }
 			]
-		}, (err, stats) => {
-			err ? reject(err) : resolve(stats);
-		});
+		},
 	});
 
 	const mainDistHtml = readFileSync(join(out, 'main-dist.html'), 'utf8');
@@ -49,30 +57,22 @@ test('single entry chunk', async t => {
 test('multiple entry chunks', async t => {
 	const out = randomPath();
 
-	await new Promise((resolve, reject) => {
-		webpack({
-			entry: {
-				one: join(__dirname, 'src/main.html'),
-				two: join(__dirname, 'src/other.html')
-			},
-			bail: true,
-			output: {
-				path: out,
-				filename: '[chunkname]-dist.html'
-			},
-			module: {
-				loaders: [
-					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
-					{ test: /\.jpg$/, loader: 'file-loader?name=[name]-dist.[ext]' },
-					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
-				]
-			},
-			plugins: [
-				new InertEntryPlugin()
+	await runWebpack({
+		entry: {
+			one: join(__dirname, 'src/main.html'),
+			two: join(__dirname, 'src/other.html')
+		},
+		output: {
+			path: out,
+			filename: '[chunkname]-dist.html'
+		},
+		module: {
+			rules: [
+				{ test: /\.html$/, use: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+				{ test: /\.jpg$/, use: 'file-loader?name=[name]-dist.[ext]' },
+				{ test: /\.js$/, use: 'spawn-loader?name=[name]-dist.js' }
 			]
-		}, (err, stats) => {
-			err ? reject(err) : resolve(stats);
-		});
+		},
 	});
 
 	const oneDistHtml = readFileSync(join(out, 'one-dist.html'), 'utf8');
@@ -95,26 +95,18 @@ test('multiple entry chunks', async t => {
 test('single entry chunk though function', async t => {
 	const out = randomPath();
 
-	await new Promise((resolve, reject) => {
-		webpack({
-			entry: () => join(__dirname, 'src/main.html'),
-			bail: true,
-			output: {
-				path: out,
-				filename: '[chunkname]-dist.html'
-			},
-			module: {
-				loaders: [
-					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
-					{ test: /\.js$/, loader: 'spawn-loader?name=[name]-dist.js' }
-				]
-			},
-			plugins: [
-				new InertEntryPlugin()
+	await runWebpack({
+		entry: () => join(__dirname, 'src/main.html'),
+		output: {
+			path: out,
+			filename: '[chunkname]-dist.html'
+		},
+		module: {
+			rules: [
+				{ test: /\.html$/, use: ['extricate-loader', 'html-loader?attrs=img:src script:src'] },
+				{ test: /\.js$/, use: 'spawn-loader?name=[name]-dist.js' }
 			]
-		}, (err, stats) => {
-			err ? reject(err) : resolve(stats);
-		});
+		},
 	});
 
 	const mainDistHtml = readFileSync(join(out, 'main-dist.html'), 'utf8');
@@ -130,26 +122,18 @@ test('single entry chunk though function', async t => {
 test('substituting [name] instead of [chunkname]', async t => {
 	const out = randomPath();
 
-	await new Promise((resolve, reject) => {
-		webpack({
-			entry: join(__dirname, 'src/other.html'),
-			bail: true,
-			output: {
-				path: out,
-				filename: '[name]-dist.html'
-			},
-			module: {
-				loaders: [
-					{ test: /\.html$/, loaders: ['extricate-loader', 'html-loader'] },
-					{ test: /\.jpg$/, loader: 'file-loader?name=[name]-dist.[ext]' }
-				]
-			},
-			plugins: [
-				new InertEntryPlugin()
+	await runWebpack({
+		entry: join(__dirname, 'src/other.html'),
+		output: {
+			path: out,
+			filename: '[name]-dist.html'
+		},
+		module: {
+			rules: [
+				{ test: /\.html$/, use: ['extricate-loader', 'html-loader'] },
+				{ test: /\.jpg$/, use: 'file-loader?name=[name]-dist.[ext]' }
 			]
-		}, (err, stats) => {
-			err ? reject(err) : resolve(stats);
-		});
+		},
 	});
 
 	const otherDistHtml = readFileSync(join(out, 'other-dist.html'), 'utf8');
