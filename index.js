@@ -40,12 +40,12 @@ InertEntryPlugin.prototype.apply = function(compiler) {
 		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/MainTemplate.js#L118
 		// https://github.com/webpack/webpack/blob/f916fc0bb70585cf04a92cd99e004e4879f1d337/lib/JavascriptModulesPlugin.js#L109
 		// https://github.com/webpack-contrib/mini-css-extract-plugin/blob/31742323d4a6004ee4a2d2be92f642de01f66cbc/src/index.js#L107
-		compilation.mainTemplate.hooks.renderManifest.tap(InertEntryPlugin.name, (result, { chunk, outputOptions }) => {
+		compilation.mainTemplate.hooks.renderManifest.tap(InertEntryPlugin.name, (result, { chunk, dependencyTemplates, outputOptions }) => {
 			if (chunk.getNumberOfModules() !== 1) {
 				throw new Error('Assertion failed: inert entry point must have exactly 1 module');
 			}
 			result.push({
-				render: () => chunk.entryModule.source(),
+				render: () => chunk.entryModule.source(dependencyTemplates, 'inert-entry-webpack-plugin_unused_runtimeTemplate'),
 				filenameTemplate: chunk.filenameTemplate || outputOptions.filename,
 				pathOptions: {
 					chunk,
