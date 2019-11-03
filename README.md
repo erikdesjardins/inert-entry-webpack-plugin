@@ -1,4 +1,4 @@
-# inert-entry-webpack-plugin [![Build Status](https://travis-ci.org/erikdesjardins/inert-entry-webpack-plugin.svg?branch=master)](https://travis-ci.org/erikdesjardins/inert-entry-webpack-plugin)
+# inert-entry-webpack-plugin
 
 Webpack plugin to allow non-js entry chunks.
 
